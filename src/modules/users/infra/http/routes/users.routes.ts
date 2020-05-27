@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import multer from 'multer';
 
-import uploadConfig from '../config/upload';
-import ensureAuthenticated from '../middlewares/ensureAuthenticated';
-import CreateUserService from '../services/CreateUserService';
-import UpdateUserAvatarService from '../services/UpdateUserAvatarService';
+import uploadConfig from '@config/upload';
+import ensureAuthenticated from '@modules/users/infra/http/middlewares/ensureAuthenticated';
+import CreateUserService from '@modules/users/services/CreateUserService';
+import UpdateUserAvatarService from '@modules/users/services/UpdateUserAvatarService';
 
 const usersRouter = Router();
 const upload = multer(uploadConfig);
@@ -23,9 +23,6 @@ usersRouter.post('/', async (req, res) => {
   delete user.password;
 
   return res.json(user);
-  return res.status(400).json({
-    error: err.message,
-  });
 });
 
 usersRouter.patch(
@@ -43,9 +40,6 @@ usersRouter.patch(
     delete user.password;
 
     return res.json(user);
-    return res.status(400).json({
-      error: err.message,
-    });
   },
 );
 
