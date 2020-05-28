@@ -1,6 +1,6 @@
 import { inject, injectable } from 'tsyringe';
 
-import { getDaysInMonth, getDate } from 'date-fns';
+import { getDaysInMonth, getDate, isBefore } from 'date-fns';
 
 import IAppointmnentsRepository from '../repositories/IAppointmentsRepository';
 
@@ -27,19 +27,33 @@ class ListProviderMonthAvailabilityService {
     month,
     year,
   }: IRequest): Promise<IResponse> {
+    const numbersOfDaysInMonth = getDaysInMonth(new Date(year, month - 1));
+
+    const eachDayArray = Array.from(
+      { length: numbersOfDaysInMonth },
+      (_, index) => index + 1,
+    );
+
+    const currentDate = new Date(Date.now());
+    const compareDate = new Date(year, month);
+
+    if (isBefore(compareDate, currentDate)) {
+      const availability = eachDayArray.map(day => {
+        return {
+          day,
+          available: false,
+        };
+      });
+
+      return availability;
+    }
+
     const appointments = await this.appointmentsRespository.findAllInMonthFromProvider(
       {
         month,
         year,
         provider_id,
       },
-    );
-
-    const numbersOfDaysInMonth = getDaysInMonth(new Date(year, month - 1));
-
-    const eachDayArray = Array.from(
-      { length: numbersOfDaysInMonth },
-      (_, index) => index + 1,
     );
 
     const availability = eachDayArray.map(day => {
