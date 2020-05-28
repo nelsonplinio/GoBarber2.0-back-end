@@ -13,6 +13,8 @@ export default class UserProfileController {
       user_id,
     });
 
+    delete user.password;
+
     return response.json(user);
   }
 
