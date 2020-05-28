@@ -1,15 +1,20 @@
 import 'reflect-metadata';
 
-import FakestorageProvider from '@shared/container/providers/StorageProvider/fakes/FakeStorageProvider';
+import FakeStorageProvider from '@shared/container/providers/StorageProvider/fakes/FakeStorageProvider';
 import AppError from '@shared/errors/AppError';
 import FakeUsersRepository from '../repositories/fakes/FakeUsersRepository';
 import UpdateUserAvatarService from './UpdateUserAvatarService';
 
-describe('UpdateUserAvatarService', () => {
-  it('should be able to update user avatar', async () => {
-    const fakeStorageProvider = new FakestorageProvider();
-    const fakeUsersRepository = new FakeUsersRepository();
+let fakeStorageProvider: FakeStorageProvider;
+let fakeUsersRepository: FakeUsersRepository;
 
+describe('UpdateUserAvatarService', () => {
+  beforeEach(() => {
+    fakeStorageProvider = new FakeStorageProvider();
+    fakeUsersRepository = new FakeUsersRepository();
+  });
+
+  it('should be able to update user avatar', async () => {
     const updateUserAvatar = new UpdateUserAvatarService(
       fakeUsersRepository,
       fakeStorageProvider,
@@ -30,9 +35,6 @@ describe('UpdateUserAvatarService', () => {
   });
 
   it('should be able update user avatar and delete old user avatar', async () => {
-    const fakeStorageProvider = new FakestorageProvider();
-    const fakeUsersRepository = new FakeUsersRepository();
-
     const deleteFileMethod = jest.spyOn(fakeStorageProvider, 'deleteFile');
 
     const updateUserAvatar = new UpdateUserAvatarService(
@@ -62,9 +64,6 @@ describe('UpdateUserAvatarService', () => {
   });
 
   it('should not be able update avatar without user authenticated', async () => {
-    const fakeStorageProvider = new FakestorageProvider();
-    const fakeUsersRepository = new FakeUsersRepository();
-
     const updateUserAvatar = new UpdateUserAvatarService(
       fakeUsersRepository,
       fakeStorageProvider,
