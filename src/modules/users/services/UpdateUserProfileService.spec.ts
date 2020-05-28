@@ -36,6 +36,16 @@ describe('UpdateUserProfileService', () => {
     expect(updatedUser.email).toBe('nelson@gobarber.com');
   });
 
+  it('should not be able to update the user profile when user not exist', async () => {
+    await expect(
+      updateProfileService.execute({
+        user_id: 'id-not-exist',
+        email: 'nelson@gobarber.com',
+        name: 'Nelson Plínio',
+      }),
+    ).rejects.toBeInstanceOf(AppError);
+  });
+
   it('should not be able to change to another user email', async () => {
     const user = await fakeUsersRepository.create({
       name: 'Nelson',
