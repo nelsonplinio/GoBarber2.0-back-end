@@ -1,30 +1,25 @@
 import nodemailer, { Transporter } from 'nodemailer';
+import aws from 'aws-sdk';
 import mailConfig from '@config/mail';
+
 import { inject, injectable } from 'tsyringe';
 import IMailTemplateProvider from '@shared/container/providers/MailTemplateProvider/models/IMailTemplateProvider';
 import IMailProvider from '../models/IMailProvider';
 import ISendEmailDTO from '../dtos/ISendEmailDTO';
 
 @injectable()
-export default class EtherealMailProvider implements IMailProvider {
+export default class SESMailProvider implements IMailProvider {
   private client: Transporter;
 
   constructor(
     @inject('MailTemplateProvider')
     private mailTemplateProvider: IMailTemplateProvider,
   ) {
-    nodemailer.createTestAccount().then(account => {
-      const transporter = nodemailer.createTransport({
-        host: account.smtp.host,
-        port: account.smtp.port,
-        secure: account.smtp.secure,
-        auth: {
-          user: account.user,
-          pass: account.pass,
-        },
-      });
-
-      this.client = transporter;
+    this.client = nodemailer.createTransport({
+      SES: new aws.SES({
+        apiVersion: '2020-12-01',
+        region: 'us-east-1', // <-Pegar no console da aws
+      }),
     });
   }
 
@@ -36,7 +31,7 @@ export default class EtherealMailProvider implements IMailProvider {
   }: ISendEmailDTO): Promise<void> {
     const { from: fromDefault } = mailConfig.defaults;
 
-    const message = await this.client.sendMail({
+    await this.client.sendMail({
       subject,
       text: 'body',
       from: {
@@ -48,7 +43,5 @@ export default class EtherealMailProvider implements IMailProvider {
         : { name: to.name, address: to.email },
       html: await this.mailTemplateProvider.parse(templateData),
     });
-
-    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(message));
   }
 }
