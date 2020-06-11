@@ -25,7 +25,7 @@ export default function (
   const [, token] = authHeader.split(' ');
 
   try {
-    const decoded = verify(token, authConfig.jwd.secret);
+    const decoded = verify(token, authConfig.jwt.secret);
 
     const { sub: userId } = decoded as TokenPayload;
 
