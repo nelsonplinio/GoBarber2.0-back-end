@@ -1,6 +1,6 @@
 import { inject, injectable } from 'tsyringe';
 
-import { getDaysInMonth, getDate, isBefore, isAfter } from 'date-fns';
+import { getDaysInMonth, getDate, isAfter } from 'date-fns';
 
 import IAppointmnentsRepository from '../repositories/IAppointmentsRepository';
 
